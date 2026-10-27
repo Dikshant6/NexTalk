@@ -67,3 +67,15 @@ export const getMe = async (req, res, next) => {
         next(error);
     }
 }
+
+export const handleLogout = (req, res, next) => {
+    try {
+        res.clearCookie(ACCESS_COOKIE_NAME, accessCookieOptions);
+        return res.status(200).json({
+            success: true,
+            message: "Logout successful"
+        })
+    } catch (error) {
+        next(error)
+    }
+}
