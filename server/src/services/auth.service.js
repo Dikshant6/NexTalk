@@ -1,6 +1,7 @@
 import { ACCESS_COOKIE_NAME, accessCookieOptions } from "../config/cookie.js";
 import User from "../models/user.model.js";
 import { hashPassword, verifyPassword } from "../utils/password.util.js";
+import { issueEmailOtp } from "./email-verification.service.js";
 
 export const registerUser = async ({
     username,
@@ -27,6 +28,8 @@ export const registerUser = async ({
             email,
             passwordHash,
         });
+
+        await issueEmailOtp(user.email);
 
         return {
             id: user._id,
@@ -67,7 +70,12 @@ export const loginUser = async ({ email, password }) => {
             const error = new Error("Invalid email or password");
             error.statusCode = 401;
             throw error;
+        }
 
+        if (!user.emailVerified) {
+            const error = new Error("Please verify your email before logging in.");
+            error.statusCode = 403;
+            throw error;
         }
 
         if (user.accountStatus !== "active") {

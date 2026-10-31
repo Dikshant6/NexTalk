@@ -16,6 +16,15 @@ export const registerSchema = z.object({
   password: z.string().min(8).max(128),
 });
 
+export const verifyEmailOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+  code: z.string().regex(/^\d{6}$/, "Code must be 6 digits"),
+})
+
+export const resendEmailOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+})
+
 export const loginSchema = z.object({
   email: z
     .string()

@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema(
       enum: ["active", "suspended"],
       default: "active",
     },
+    emailVerified: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true, versionKey: false },
 );

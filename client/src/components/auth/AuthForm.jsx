@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/auth.service";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 
@@ -16,9 +15,30 @@ export default function AuthForm({
   children,
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [internalEmail, setInternalEmail] = useState(
+    location.state?.email || ""
+  );
+  const [internalPassword, setInternalPassword] = useState("");
+
+  const currentEmail = email !== undefined ? email : internalEmail;
+  const handleEmailChange = (val) => {
+    if (setEmail) setEmail(val);
+    else setInternalEmail(val);
+  };
+
+  const currentPassword = password !== undefined ? password : internalPassword;
+  const handlePasswordChange = (val) => {
+    if (setPassword) setPassword(val);
+    else setInternalPassword(val);
+  };
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState(
+    location.state?.successMessage || location.state?.message || ""
+  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -29,22 +49,30 @@ export default function AuthForm({
 
     const formData = new FormData(event.currentTarget);
 
-    const email = formData.get("email");
-    const password = formData.get("password");
+    const submittedEmail = formData.get("email") || currentEmail;
+    const submittedPassword = formData.get("password") || currentPassword;
 
     try {
       if (isRegister) {
         await authService.register({
           username: formData.get("username"),
           displayName: formData.get("displayName"),
-          email,
-          password,
+          email: submittedEmail,
+          password: submittedPassword,
         });
 
-        setSuccess("Account created! You can now sign in.");
-        navigate("/login");
+        // Navigate directly to email verification screen with safe state
+        navigate("/verify-email", {
+          state: {
+            email: submittedEmail,
+            fromRegistration: true,
+          },
+        });
       } else {
-        await authService.login({ email, password });
+        await authService.login({
+          email: submittedEmail,
+          password: submittedPassword,
+        });
 
         setSuccess("Login successful!");
         navigate("/");
@@ -89,8 +117,8 @@ export default function AuthForm({
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            value={currentEmail}
+            onChange={(event) => handleEmailChange(event.target.value)}
             required
             maxLength={254}
             className="h-12 rounded-md border-[#DCD7CC] bg-transparent px-4 shadow-none focus-visible:ring-[#777A62]"
@@ -107,8 +135,8 @@ export default function AuthForm({
             type="password"
             autoComplete={isRegister ? "new-password" : "current-password"}
             placeholder="Enter your password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            value={currentPassword}
+            onChange={(event) => handlePasswordChange(event.target.value)}
             required
             minLength={isRegister ? 8 : 1}
             maxLength={128}

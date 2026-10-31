@@ -18,10 +18,11 @@ export const requireAuth = (req, res, next) => {
             issuer: "nextalk-api",
             audience: "nextalk-client"
         })
+        const isValidObjectId = /^[a-f\d]{24}$/i.test(payload?.sub);
         if (
             typeof payload === "string" ||
             typeof payload.sub !== "string" ||
-            !/^[a-f\d]{24}$/i.test(payload.sub)
+            isValidObjectId
         ) {
             return res.status(401).json({
                 success: false,

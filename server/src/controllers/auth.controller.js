@@ -2,6 +2,10 @@ import { ACCESS_COOKIE_NAME, accessCookieOptions } from "../config/cookie.js";
 import { registerUser, loginUser } from "../services/auth.service.js";
 import { createAccessToken } from "../utils/token.util.js";
 import User from "../models/user.model.js";
+import {
+    verifyEmailOtp,
+    issueEmailOtp,
+} from "../services/email-verification.service.js";
 
 export const handleRegister = async (req, res, next) => {
     try {
@@ -10,7 +14,7 @@ export const handleRegister = async (req, res, next) => {
 
         return res.status(201).json({
             success: true,
-            message: "Account created successfully",
+            message: "Account created. Check your email for a verification code.",
             user,
         });
     } catch (error) {
@@ -79,3 +83,41 @@ export const handleLogout = (req, res, next) => {
         next(error)
     }
 }
+
+
+export const handleVerifyEmail = async (req, res, next) => {
+    try {
+        const { email, code } = res.locals.validated.body;
+
+        await verifyEmailOtp(email, code);
+
+        return res.status(200).json({
+            success: true,
+            message: "Email verified successfully. You can now log in.",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const handleResendEmailOtp = async (req, res, next) => {
+    try {
+        const { email } = res.locals.validated.body;
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const user = await User.findOne({ email: normalizedEmail });
+
+        // Avoid revealing whether an email has an account.
+        if (user && !user.emailVerified && user.accountStatus === "active") {
+            await issueEmailOtp(normalizedEmail);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message:
+                "If an eligible unverified account exists, a verification email will be sent.",
+        });
+    } catch (error) {
+        next(error);
+    }
+};

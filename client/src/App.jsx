@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import AboutPage from "@/pages/AboutPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import VerifyEmailPage from "@/pages/VerifyEmailPage";
 
 import { AuthProvider } from "@/context/AuthContext";
 import GuestRoute from "@/components/auth/GuestRoute";
@@ -21,6 +22,7 @@ function AppContent() {
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
         </Route>
       </Routes>
 

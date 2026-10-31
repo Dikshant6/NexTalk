@@ -33,5 +33,15 @@ export const authService = {
 
     logout: () => request("/logout", {
         method: "GET",
-    })
+    }),
+
+    verifyEmail: ({ email, code }) => request("/verify-email", {
+        method: "POST",
+        body: JSON.stringify({ email, code }),
+    }),
+
+    resendVerification: ({ email }) => request("/resend-verification", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+    }),
 }
