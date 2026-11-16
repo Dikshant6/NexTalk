@@ -50,12 +50,12 @@ The application is being developed incrementally, starting with the backend foun
 | HTTP-only authentication cookie | Implemented |
 | Protected user profile endpoint | Implemented |
 | Logout and session handling | Implemented; further hardening planned |
-| Google OAuth | Planned |
+| Google OAuth | Implemented |
 | Sign in with Apple | Planned |
-| Email verification with OTP | Planned |
-| OTP expiration and resend limits | Planned |
-| Authentication rate limiting | Planned |
-| Centralized error handling and validation hardening | In progress |
+| Email verification with OTP | Implemented |
+| OTP expiration and resend limits | Implemented |
+| Authentication rate limiting | Implemented |
+| Centralized error handling and validation hardening | Implemented |
 
 ### Messaging and User Experience
 
