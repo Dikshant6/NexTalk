@@ -1,28 +1,35 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validate.middleware.js";
 import {
-    registerSchema,
-    loginSchema,
-    verifyEmailOtpSchema,
-    resendEmailOtpSchema
+  registerSchema,
+  loginSchema,
+  verifyEmailOtpSchema,
+  resendEmailOtpSchema,
+  googleAuthSchema,
 } from "../schemas/auth.schema.js";
 import {
-    handleLogin,
-    handleRegister,
-    getMe,
-    handleLogout,
-    handleResendEmailOtp,
-    handleVerifyEmail
+  handleLogin,
+  handleRegister,
+  getMe,
+  handleLogout,
+  handleResendEmailOtp,
+  handleVerifyEmail,
+  handleGoogleAuth,
 } from "../controllers/auth.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.post("/register", validate(registerSchema), handleRegister)
+router.post("/register", validate(registerSchema), handleRegister);
 router.post("/login", validate(loginSchema), handleLogin);
 router.get("/me", requireAuth, getMe);
 router.get("/logout", handleLogout);
-router.post("/verify-email", validate(verifyEmailOtpSchema), handleVerifyEmail,);
-router.post("/resend-verification", validate(resendEmailOtpSchema), handleResendEmailOtp,);
+router.post("/verify-email", validate(verifyEmailOtpSchema), handleVerifyEmail);
+router.post(
+  "/resend-verification",
+  validate(resendEmailOtpSchema),
+  handleResendEmailOtp,
+);
+router.post("/google", validate(googleAuthSchema), handleGoogleAuth);
 
-export default router; 
+export default router;

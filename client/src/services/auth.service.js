@@ -1,47 +1,61 @@
 const AUTH_URL = `${import.meta.env.VITE_API_URL}/auth`;
 
 async function request(endpoint, options = {}) {
-    const response = await fetch(`${AUTH_URL}${endpoint}`, {
-        ...options,
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-            ...options.headers,
-        }
-    });
+  const response = await fetch(`${AUTH_URL}${endpoint}`, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
-    const data = await response.json().catch(() => ({}));
+  const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-        throw new Error(data.message || data.error || "Something went wrong")
-    }
-    return data;
+  if (!response.ok) {
+    throw new Error(data.message || data.error || "Something went wrong");
+  }
+  return data;
 }
 
 export const authService = {
-    register: (userData) => request("/register", {
-        method: "POST",
-        body: JSON.stringify(userData),
+  register: (userData) =>
+    request("/register", {
+      method: "POST",
+      body: JSON.stringify(userData),
     }),
 
-    login: (credentials) => request("/login", {
-        method: "POST",
-        body: JSON.stringify(credentials),
+  login: (credentials) =>
+    request("/login", {
+      method: "POST",
+      body: JSON.stringify(credentials),
     }),
 
-    getMe: () => request("/me"),
+  getMe: () => request("/me"),
 
-    logout: () => request("/logout", {
-        method: "GET",
+  logout: () =>
+    request("/logout", {
+      method: "GET",
     }),
 
-    verifyEmail: ({ email, code }) => request("/verify-email", {
-        method: "POST",
-        body: JSON.stringify({ email, code }),
+  verifyEmail: ({ email, code }) =>
+    request("/verify-email", {
+      method: "POST",
+      body: JSON.stringify({ email, code }),
     }),
 
-    resendVerification: ({ email }) => request("/resend-verification", {
-        method: "POST",
-        body: JSON.stringify({ email }),
+  resendVerification: ({ email }) =>
+    request("/resend-verification", {
+      method: "POST",
+      body: JSON.stringify({ email }),
     }),
-}
+
+  googleLogin: (code) =>
+    request("/google", {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XmlHttpRequest",
+      },
+      body: JSON.stringify({ code }),
+    }),
+};

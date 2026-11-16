@@ -16,6 +16,8 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().email(),
   OTP_HASH_SECRET: z.string().min(32),
   EMAIL_TEST_RECIPIENT: z.string().email(),
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
 });
 
 const result = envSchema.safeParse(process.env);

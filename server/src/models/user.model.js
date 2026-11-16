@@ -26,9 +26,14 @@ const userSchema = new mongoose.Schema(
       maxlength: 254,
     },
 
+    googleId: {
+      type: String,
+      trim: true,
+    },
+
     passwordHash: {
       type: String,
-      required: true,
+      required: false,
       select: false,
     },
 
@@ -51,14 +56,15 @@ const userSchema = new mongoose.Schema(
     },
     emailVerified: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   { timestamps: true, versionKey: false },
 );
 
 userSchema.index({ username: 1 }, { unique: true });
 userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ googleId: 1 }, { unique: true, sparse: true });
 
 const User = mongoose.model("User", userSchema);
 export default User;
