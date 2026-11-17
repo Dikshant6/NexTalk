@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { authService } from "@/services/auth.service";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AuthForm({
   isRegister,
@@ -14,11 +15,12 @@ export default function AuthForm({
   onToggleMode,
   children,
 }) {
+  const { refreshUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [internalEmail, setInternalEmail] = useState(
-    location.state?.email || ""
+    location.state?.email || "",
   );
   const [internalPassword, setInternalPassword] = useState("");
 
@@ -37,7 +39,7 @@ export default function AuthForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(
-    location.state?.successMessage || location.state?.message || ""
+    location.state?.successMessage || location.state?.message || "",
   );
 
   const handleSubmit = async (event) => {
@@ -74,8 +76,13 @@ export default function AuthForm({
           password: submittedPassword,
         });
 
-        setSuccess("Login successful!");
-        navigate("/");
+        const isAuthenticated = await refreshUser();
+
+        if (!isAuthenticated) {
+          throw new Error("Login succeeded, but session verification failed.");
+        }
+
+        navigate("/chats", { replace: true });
       }
     } catch (err) {
       setError(err.message || "Request failed. Please try again.");

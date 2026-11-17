@@ -1,4 +1,3 @@
-import { ACCESS_COOKIE_NAME, accessCookieOptions } from "../config/cookie.js";
 import User from "../models/user.model.js";
 import { hashPassword, verifyPassword } from "../utils/password.util.js";
 import { issueEmailOtp } from "./email-verification.service.js";

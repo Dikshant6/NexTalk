@@ -1,29 +1,128 @@
 @import "tailwindcss";
 
+/* ========================================
+   NEXtalk DESIGN SYSTEM
+======================================== */
+
 :root {
   color-scheme: light;
-  font-family: "Geist Variable", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Brand */
+  --nt-ink: #242521;
+  --nt-olive: #777967;
+  --nt-olive-hover: #656754;
+
+  /* Backgrounds */
+  --nt-background: #f3f0e9;
+  --nt-surface: #f8f6f1;
+  --nt-surface-secondary: #eae6dc;
+
+  /* Text */
+  --nt-text: #242521;
+  --nt-text-secondary: #929087;
+  --nt-text-muted: #aaa69c;
+
+  /* Borders */
+  --nt-border: #ded9ce;
+  --nt-border-strong: #d2cdbf;
+
+  /* Messages */
+  --nt-message-sent: #242521;
+  --nt-message-received: #f8f6f1;
+
+  /* Composer */
+  --nt-composer: #f8f6f1;
+  --nt-composer-action: #777967;
+
+  /* Effects */
+  --nt-shadow: 0 2px 12px rgba(36, 37, 33, 0.04);
+
+  font-family:
+    "Geist Variable",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
 }
+
+/* ========================================
+   TAILWIND V4 THEME MAPPING
+======================================== */
+
+@theme inline {
+  --color-app: var(--nt-background);
+  --color-surface: var(--nt-surface);
+  --color-surface-secondary: var(--nt-surface-secondary);
+
+  --color-ink: var(--nt-ink);
+  --color-olive: var(--nt-olive);
+  --color-olive-hover: var(--nt-olive-hover);
+
+  --color-text-main: var(--nt-text);
+  --color-text-secondary: var(--nt-text-secondary);
+  --color-text-muted: var(--nt-text-muted);
+
+  --color-app-border: var(--nt-border);
+  --color-app-border-strong: var(--nt-border-strong);
+
+  --color-message-sent: var(--nt-message-sent);
+  --color-message-received: var(--nt-message-received);
+
+  --color-composer: var(--nt-composer);
+  --color-composer-action: var(--nt-composer-action);
+}
+
+/* ========================================
+   GLOBAL STYLES
+======================================== */
 
 html,
 body {
-  background-color: #F5F2EA;
-  color: #22231F;
+  background-color: var(--nt-background);
+  color: var(--nt-text);
   min-height: 100%;
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ========================================
+   ANIMATIONS
+======================================== */
+
 @keyframes caret-blink {
-  0%, 70%, 100% {
+  0%,
+  70%,
+  100% {
     opacity: 1;
   }
-  20%, 50% {
+
+  20%,
+  50% {
     opacity: 0;
   }
 }
 
 .animate-caret-blink {
   animation: caret-blink 1.2s ease-out infinite;
+}
+
+/* ========================================
+   SCROLLBAR
+======================================== */
+
+.dashboard-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--nt-border-strong) transparent;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dashboard-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--nt-border-strong);
+  border-radius: 20px;
 }

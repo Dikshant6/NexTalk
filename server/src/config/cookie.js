@@ -7,5 +7,5 @@ export const accessCookieOptions = {
     secure: env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 15 * 60 * 1000,
+    maxAge: 60 * 60 * 1000,
 };

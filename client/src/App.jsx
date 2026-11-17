@@ -1,22 +1,24 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import { AuthProvider } from "@/context/AuthContext";
+
+import GuestRoute from "@/components/auth/GuestRoute";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
+import SiteLayout from "@/components/layout/SiteLayout";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
 
 import AboutPage from "@/pages/AboutPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import VerifyEmailPage from "@/pages/VerifyEmailPage";
-
-import { AuthProvider } from "@/context/AuthContext";
-import GuestRoute from "@/components/auth/GuestRoute";
+import ChatPage from "@/components/dashboard/ChatPage";
 
 function AppContent() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#F5F2EA] text-[#22231F]">
-      <Header />
-
-      <Routes>
+    <Routes>
+      {/* Public application */}
+      <Route element={<SiteLayout />}>
         <Route path="/" element={<AboutPage />} />
 
         <Route element={<GuestRoute />}>
@@ -24,10 +26,15 @@ function AppContent() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
         </Route>
-      </Routes>
+      </Route>
 
-      <Footer />
-    </div>
+      {/* Protected application */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/chats" element={<DashboardLayout />}>
+          <Route index element={<ChatPage />} />
+        </Route>
+      </Route>
+    </Routes>
   );
 }
 

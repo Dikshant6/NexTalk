@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 import { authService } from "@/services/auth.service";
+import { useAuth } from "@/context/AuthContext";
 
 function GoogleLogo({ className = "size-5" }) {
   return (
@@ -41,6 +42,7 @@ function AppleLogo({ className = "size-5" }) {
 
 export default function SocialAuthButtons({ isRegister = false }) {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
@@ -55,7 +57,13 @@ export default function SocialAuthButtons({ isRegister = false }) {
 
         await authService.googleLogin(code);
 
-        navigate("/");
+        const isAuthenticated = await refreshUser();
+
+        if (!isAuthenticated) {
+          throw new Error("Google session verification failed.");
+        }
+
+        navigate("/chats", { replace: true });
       } catch (error) {
         setNotice(error.message || "Google authentication failed.");
       } finally {

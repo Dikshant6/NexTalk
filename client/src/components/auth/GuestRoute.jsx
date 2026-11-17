@@ -9,7 +9,7 @@ export default function GuestRoute() {
   }
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/chats" replace />;
   }
 
   return <Outlet />;

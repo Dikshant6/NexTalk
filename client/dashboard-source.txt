@@ -1,0 +1,662 @@
+
+========== src/components/dashboard/ChatPage.jsx ==========
+
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+import { mockChats } from "@/data/mockChats";
+
+import Sidebar from "@/components/dashboard/Sidebar";
+import ChatWindow from "@/components/dashboard/ChatWindow";
+import DetailsPanel from "@/components/dashboard/DetailsPanel";
+
+export default function ChatPage() {
+  const [chats, setChats] = useState(mockChats);
+  const [selectedChatId, setSelectedChatId] = useState("1");
+
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const selectedChat = chats.find((chat) => chat.id === selectedChatId);
+
+  const handleSelectChat = (chat) => {
+    setSelectedChatId(chat.id);
+
+    setChats((previous) =>
+      previous.map((item) =>
+        item.id === chat.id ? { ...item, unread: 0 } : item,
+      ),
+    );
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  };
+
+  return (
+    <main className="h-dvh min-h-[600px] bg-[#09090D] p-3 text-white">
+      <div className="grid h-full grid-cols-[260px_minmax(0,1fr)_280px] overflow-hidden rounded-2xl border border-white/[0.09]">
+        <Sidebar
+          chats={chats}
+          selectedChat={selectedChat}
+          onSelectChat={handleSelectChat}
+          user={user}
+          onLogout={handleLogout}
+        />
+
+        <ChatWindow chat={selectedChat} />
+
+        <DetailsPanel chat={selectedChat} />
+      </div>
+    </main>
+  );
+}
+
+========== src/components/dashboard/ChatWindow.jsx ==========
+
+import { useEffect, useRef, useState } from "react";
+import {
+  Phone,
+  Video,
+  Info,
+  Paperclip,
+  Smile,
+  Send,
+  CheckCheck,
+  MoreHorizontal,
+} from "lucide-react";
+
+export default function ChatWindow({ chat }) {
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    setMessages(chat?.messages || []);
+    setMessage("");
+  }, [chat]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
+
+  const handleSend = (e) => {
+    e.preventDefault();
+
+    const text = message.trim();
+
+    if (!text) return;
+
+    const newMessage = {
+      id: crypto.randomUUID(),
+      sender: "me",
+      text,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+
+    setMessages((prev) => [...prev, newMessage]);
+    setMessage("");
+  };
+
+  if (!chat) {
+    return (
+      <div className="grid h-full place-items-center bg-[#0D0D12]">
+        <div className="text-center">
+          <div className="mx-auto mb-5 grid size-16 place-items-center rounded-2xl bg-violet-500/10 text-violet-400">
+            <Send size={26} />
+          </div>
+
+          <h2 className="text-lg font-semibold text-white">
+            Your conversations, all in one place.
+          </h2>
+
+          <p className="mt-2 text-sm text-zinc-500">
+            Select a conversation to start messaging.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <section className="flex h-full min-h-0 flex-col bg-[#0D0D12]">
+      {/* Header */}
+      <header className="flex h-[76px] shrink-0 items-center justify-between border-b border-white/[0.07] px-6">
+        <div className="flex items-center gap-3">
+          <div
+            className={`grid size-10 place-items-center rounded-full ${chat.color} text-sm font-semibold`}
+          >
+            {chat.avatar}
+          </div>
+
+          <div>
+            <h2 className="text-sm font-semibold text-white">{chat.name}</h2>
+
+            <p className="mt-0.5 text-xs text-zinc-500">
+              {chat.online ? "Active now" : "Offline"}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          {[Phone, Video, Info, MoreHorizontal].map((Icon, index) => (
+            <button
+              key={index}
+              title={["Voice call", "Video call", "Information", "More"][index]}
+              className="rounded-lg p-2.5 text-zinc-500 transition hover:bg-white/5 hover:text-violet-400"
+            >
+              <Icon size={18} />
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* Messages */}
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-6">
+        <div className="text-center">
+          <span className="rounded-full bg-white/[0.04] px-3 py-1 text-[10px] text-zinc-600">
+            Today
+          </span>
+        </div>
+
+        {messages.map((msg) => {
+          const mine = msg.sender === "me";
+
+          return (
+            <div
+              key={msg.id}
+              className={`flex ${mine ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+                  mine
+                    ? "rounded-br-sm bg-violet-600 text-white"
+                    : "rounded-bl-sm border border-white/[0.06] bg-[#191920] text-zinc-200"
+                }`}
+              >
+                <p className="break-words text-sm leading-6">{msg.text}</p>
+
+                <div
+                  className={`mt-1.5 flex items-center justify-end gap-1 text-[10px] ${
+                    mine ? "text-violet-200" : "text-zinc-600"
+                  }`}
+                >
+                  {msg.time}
+                  {mine && <CheckCheck size={13} />}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Composer */}
+      <div className="shrink-0 border-t border-white/[0.07] p-5">
+        <form
+          onSubmit={handleSend}
+          className="flex items-center gap-3 rounded-2xl border border-white/[0.09] bg-white/[0.025] px-4"
+        >
+          <button
+            type="button"
+            title="Attach file"
+            className="text-zinc-500 hover:text-violet-400"
+          >
+            <Paperclip size={19} />
+          </button>
+
+          <input
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Write a message..."
+            className="h-14 min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
+          />
+
+          <button
+            type="button"
+            title="Emoji"
+            className="text-zinc-500 hover:text-violet-400"
+          >
+            <Smile size={19} />
+          </button>
+
+          <button
+            type="submit"
+            disabled={!message.trim()}
+            title="Send message"
+            className="grid size-9 place-items-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Send size={16} />
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+========== src/components/dashboard/DashboardLayout.jsx ==========
+
+import { Outlet } from "react-router-dom";
+
+export default function DashboardLayout() {
+  return <Outlet />;
+}
+
+========== src/components/dashboard/DetailsPanel.jsx ==========
+
+import {
+  Phone,
+  Video,
+  Image,
+  FileText,
+  Link2,
+  ShieldCheck,
+} from "lucide-react";
+
+export default function DetailsPanel({ chat }) {
+  if (!chat) {
+    return (
+      <aside className="h-full border-l border-white/[0.07] bg-[#111116]" />
+    );
+  }
+
+  return (
+    <aside className="h-full overflow-y-auto border-l border-white/[0.07] bg-[#111116]">
+      {/* Profile */}
+      <div className="flex flex-col items-center border-b border-white/[0.07] px-5 py-10">
+        <div
+          className={`grid size-20 place-items-center rounded-full ${chat.color} text-2xl font-semibold`}
+        >
+          {chat.avatar}
+        </div>
+
+        <h2 className="mt-4 text-lg font-semibold text-white">{chat.name}</h2>
+
+        <p className="mt-1 text-xs text-zinc-500">@{chat.username}</p>
+
+        <div className="mt-3 flex items-center gap-2 text-xs text-zinc-400">
+          <span
+            className={`size-2 rounded-full ${
+              chat.online ? "bg-emerald-500" : "bg-zinc-600"
+            }`}
+          />
+          {chat.online ? "Online" : "Offline"}
+        </div>
+
+        <div className="mt-6 flex gap-3">
+          {[Phone, Video].map((Icon, index) => (
+            <button
+              key={index}
+              className="grid size-10 place-items-center rounded-xl border border-white/[0.08] text-zinc-400 transition hover:border-violet-500/40 hover:text-violet-400"
+            >
+              <Icon size={17} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Shared content */}
+      <div className="p-5">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-white">Shared content</h3>
+
+          <button className="text-xs text-violet-400 hover:text-violet-300">
+            View all
+          </button>
+        </div>
+
+        <div className="mt-5 space-y-4">
+          {[
+            { icon: Image, name: "Media", count: "12 items" },
+            { icon: FileText, name: "Documents", count: "4 files" },
+            { icon: Link2, name: "Links", count: "3 links" },
+          ].map((item) => (
+            <div key={item.name} className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="grid size-9 place-items-center rounded-lg bg-white/[0.04] text-zinc-400">
+                  <item.icon size={17} />
+                </div>
+
+                <span className="text-sm text-zinc-300">{item.name}</span>
+              </div>
+
+              <span className="text-xs text-zinc-600">{item.count}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Security */}
+      <div className="mx-5 mt-3 flex gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <ShieldCheck className="shrink-0 text-violet-400" size={18} />
+
+        <div>
+          <p className="text-xs font-medium text-zinc-300">
+            Privacy & security
+          </p>
+          <p className="mt-1 text-[11px] leading-5 text-zinc-600">
+            Manage your conversation privacy and settings.
+          </p>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+========== src/components/dashboard/Sidebar.jsx ==========
+
+import { useState } from "react";
+import {
+  Search,
+  MessageSquarePlus,
+  MoreHorizontal,
+  Settings,
+  LogOut,
+  Users,
+} from "lucide-react";
+
+export default function Sidebar({
+  chats,
+  selectedChat,
+  onSelectChat,
+  user,
+  onLogout,
+}) {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+
+  const filteredChats = chats.filter((chat) => {
+    const matchesSearch = chat.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "unread" && chat.unread > 0) ||
+      (filter === "groups" && chat.type === "group");
+
+    return matchesSearch && matchesFilter;
+  });
+
+  return (
+    <aside className="flex h-full min-h-0 flex-col border-r border-white/[0.07] bg-[#111116]">
+      {/* Profile */}
+      <div className="flex items-center justify-between border-b border-white/[0.07] p-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="grid size-11 shrink-0 place-items-center rounded-full bg-violet-600 font-semibold">
+            {user?.displayName?.[0]?.toUpperCase() || "N"}
+          </div>
+
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-semibold text-white">
+              {user?.displayName || user?.username || "NexTalk User"}
+            </h2>
+            <p className="truncate text-xs text-zinc-500">
+              {user?.email || "Your account"}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={onLogout}
+          title="Logout"
+          className="rounded-lg p-2 text-zinc-500 hover:bg-white/5 hover:text-white"
+        >
+          <LogOut size={17} />
+        </button>
+      </div>
+
+      {/* Heading */}
+      <div className="flex items-center justify-between px-5 pb-4 pt-6">
+        <h1 className="text-xl font-semibold tracking-tight">Messages</h1>
+
+        <button
+          title="New conversation"
+          className="rounded-lg p-2 text-zinc-400 transition hover:bg-white/5 hover:text-violet-400"
+        >
+          <MessageSquarePlus size={19} />
+        </button>
+      </div>
+
+      {/* Search */}
+      <div className="px-4">
+        <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3">
+          <Search size={16} className="text-zinc-500" />
+
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search conversations..."
+            className="h-10 w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
+          />
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex gap-2 px-4 py-4">
+        {[
+          { id: "all", label: "All" },
+          { id: "unread", label: "Unread" },
+          { id: "groups", label: "Groups" },
+        ].map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setFilter(item.id)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+              filter === item.id
+                ? "bg-violet-600 text-white"
+                : "bg-white/[0.04] text-zinc-500 hover:text-white"
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Conversation list */}
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+        <div className="mb-3 px-2 text-[11px] font-semibold uppercase tracking-widest text-zinc-600">
+          Recent conversations
+        </div>
+
+        {filteredChats.map((chat) => {
+          const active = selectedChat?.id === chat.id;
+
+          return (
+            <button
+              key={chat.id}
+              onClick={() => onSelectChat(chat)}
+              className={`mb-1 flex w-full items-center gap-3 rounded-xl p-3 text-left transition ${
+                active ? "bg-violet-500/10" : "hover:bg-white/[0.04]"
+              }`}
+            >
+              <div
+                className={`relative grid size-11 shrink-0 place-items-center rounded-full ${chat.color} text-sm font-semibold text-white`}
+              >
+                {chat.avatar}
+
+                {chat.online && (
+                  <span className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-[#111116] bg-emerald-500" />
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className={`truncate text-sm font-medium ${active ? "text-violet-300" : "text-zinc-200"}`}
+                  >
+                    {chat.name}
+                  </span>
+
+                  <span className="shrink-0 text-[10px] text-zinc-600">
+                    {chat.time}
+                  </span>
+                </div>
+
+                <div className="mt-1 flex items-center justify-between gap-2">
+                  <span className="truncate text-xs text-zinc-500">
+                    {chat.lastMessage}
+                  </span>
+
+                  {chat.unread > 0 && (
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-violet-600 text-[10px] text-white">
+                      {chat.unread}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+
+        {filteredChats.length === 0 && (
+          <p className="px-3 py-8 text-center text-xs text-zinc-500">
+            No conversations found.
+          </p>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between border-t border-white/[0.07] p-4">
+        <span className="flex items-center gap-2 text-xs text-zinc-500">
+          <Users size={15} />
+          NexTalk
+        </span>
+
+        <button
+          title="Settings"
+          className="rounded-lg p-2 text-zinc-500 hover:bg-white/5 hover:text-white"
+        >
+          <Settings size={17} />
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+========== src/pages/ChatPage.jsx ==========
+
+export default function ChatPage() {
+  return (
+    <div className="min-h-screen grid place-items-center">
+      <div className="text-center">
+        <h1 className="text-3xl font-semibold">Welcome to NexTalk.</h1>
+        <p className="mt-2 text-zinc-400">Your conversations start here.</p>
+      </div>
+    </div>
+  );
+}
+
+========== src/data/mockChats.js ==========
+
+export const mockChats = [
+  {
+    id: "1",
+    name: "Alex Morgan",
+    username: "alexmorgan",
+    avatar: "AM",
+    color: "bg-violet-500",
+    online: true,
+    type: "personal",
+    unread: 2,
+    lastMessage: "Are we still meeting today?",
+    time: "10:42 AM",
+    messages: [
+      {
+        id: "m1",
+        sender: "them",
+        text: "Hey! How's the project going?",
+        time: "10:35 AM",
+      },
+      {
+        id: "m2",
+        sender: "me",
+        text: "Pretty good! Working on the dashboard.",
+        time: "10:38 AM",
+      },
+      {
+        id: "m3",
+        sender: "them",
+        text: "The new design looks amazing.",
+        time: "10:40 AM",
+      },
+      {
+        id: "m4",
+        sender: "them",
+        text: "Are we still meeting today?",
+        time: "10:42 AM",
+      },
+    ],
+  },
+  {
+    id: "2",
+    name: "Sarah Wilson",
+    username: "sarahwilson",
+    avatar: "SW",
+    color: "bg-pink-500",
+    online: true,
+    type: "personal",
+    unread: 0,
+    lastMessage: "Sent you the documents.",
+    time: "9:30 AM",
+    messages: [
+      {
+        id: "m5",
+        sender: "them",
+        text: "Sent you the documents.",
+        time: "9:30 AM",
+      },
+    ],
+  },
+  {
+    id: "3",
+    name: "Development Team",
+    username: "dev-team",
+    avatar: "DT",
+    color: "bg-emerald-600",
+    online: false,
+    type: "group",
+    unread: 0,
+    lastMessage: "David: Push the latest changes.",
+    time: "Yesterday",
+    messages: [
+      {
+        id: "m6",
+        sender: "them",
+        text: "David: Push the latest changes.",
+        time: "Yesterday",
+      },
+    ],
+  },
+  {
+    id: "4",
+    name: "Emma Watson",
+    username: "emmawatson",
+    avatar: "EW",
+    color: "bg-orange-500",
+    online: false,
+    type: "personal",
+    unread: 0,
+    lastMessage: "See you tomorrow!",
+    time: "Yesterday",
+    messages: [
+      {
+        id: "m7",
+        sender: "them",
+        text: "See you tomorrow!",
+        time: "Yesterday",
+      },
+    ],
+  },
+];
