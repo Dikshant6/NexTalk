@@ -28,6 +28,71 @@ export default function ChatPage() {
     );
   };
 
+  const handleToggleMute = (chatId, muted) => {
+    setChats((previous) =>
+      previous.map((chat) =>
+        chat.id === chatId ? { ...chat, isMuted: muted } : chat,
+      ),
+    );
+  };
+
+  const handleCreateConversation = (selectedUser) => {
+    const existingChat = chats.find(
+      (chat) =>
+        chat.username === selectedUser.username && chat.type !== "group",
+    );
+
+    if (existingChat) {
+      handleSelectChat(existingChat);
+      return;
+    }
+
+    const newChat = {
+      id: crypto.randomUUID(),
+      userId: selectedUser.id,
+      name: selectedUser.name,
+      username: selectedUser.username,
+      avatar: selectedUser.avatar,
+      online: selectedUser.online,
+      type: "personal",
+      unread: 0,
+      lastMessage: "",
+      time: "",
+      messages: [],
+    };
+
+    setChats((previous) => [newChat, ...previous]);
+    setSelectedChatId(newChat.id);
+  };
+
+  const handleClearChat = (chatId) => {
+    setChats((previous) =>
+      previous.map((chat) =>
+        chat.id === chatId
+          ? {
+              ...chat,
+              messages: [],
+              lastMessage: "",
+              time: "",
+              unread: 0,
+            }
+          : chat,
+      ),
+    );
+  };
+
+  const handleDeleteConversation = (chatId) => {
+    const remainingChats = chats.filter((chat) => chat.id !== chatId);
+
+    setChats(remainingChats);
+
+    if (selectedChatId === chatId) {
+      setSelectedChatId(remainingChats[0]?.id ?? null);
+    }
+
+    setShowDetails(false);
+  };
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -41,7 +106,7 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="h-dvh min-h-[600px] bg-[#F3F0E9] p-4 text-[#242521]">
+    <main className="h-dvh min-h-[600px] bg-app p-4 text-text-main">
       <div
         className={`grid h-full min-h-0 gap-3 ${
           showDetails
@@ -55,14 +120,16 @@ export default function ChatPage() {
           chats={chats}
           selectedChat={selectedChat}
           onSelectChat={handleSelectChat}
+          onCreateConversation={handleCreateConversation}
           user={user}
           onLogout={handleLogout}
         />
 
         <ChatWindow
           chat={selectedChat}
-          onToggleDetails={handleToggleDetails}
+          onToggleDetails={() => setShowDetails((prev) => !prev)}
           isDetailsOpen={showDetails}
+          onToggleMute={handleToggleMute}
         />
 
         {showDetails && selectedChat && <DetailsPanel chat={selectedChat} />}

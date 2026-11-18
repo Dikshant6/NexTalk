@@ -65,9 +65,9 @@ The application is being developed incrementally, starting with the backend foun
 | Login and registration interfaces | Implemented |
 | Authentication UI connected to backend | Implemented |
 | Google and Apple logo buttons | UI work planned |
-| Main chat dashboard | Planned |
-| Conversation list and search | Planned |
-| Username-based user discovery | Planned |
+| Main chat dashboard | Implemented |
+| Conversation list and search | Implemented |
+| Username-based user discovery | Implemented |
 | One-to-one messaging | Planned |
 | Real-time message delivery | Planned |
 | Online/offline presence | Planned |

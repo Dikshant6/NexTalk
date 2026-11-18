@@ -1,3 +1,4 @@
+
 @import "tailwindcss";
 
 /* ========================================
@@ -8,34 +9,40 @@
   color-scheme: light;
 
   /* Brand */
-  --nt-ink: #242521;
-  --nt-olive: #777967;
-  --nt-olive-hover: #656754;
+  --nt-primary: #A9B98C;
+  --nt-primary-hover: #95A879;
+  --nt-secondary: #F3EDDF;
+  --nt-accent: #FF6B5E;
+
+  /* Legacy aliases - existing components */
+  --nt-ink: #303329;
+  --nt-olive: var(--nt-primary);
+  --nt-olive-hover: var(--nt-primary-hover);
 
   /* Backgrounds */
-  --nt-background: #f3f0e9;
-  --nt-surface: #f8f6f1;
-  --nt-surface-secondary: #eae6dc;
+  --nt-background: #F3EDDF;
+  --nt-surface: #FAF7EF;
+  --nt-surface-secondary: #EAE3D4;
 
   /* Text */
-  --nt-text: #242521;
-  --nt-text-secondary: #929087;
-  --nt-text-muted: #aaa69c;
+  --nt-text: #303329;
+  --nt-text-secondary: #817F73;
+  --nt-text-muted: #A39E90;
 
   /* Borders */
-  --nt-border: #ded9ce;
-  --nt-border-strong: #d2cdbf;
+  --nt-border: #DED7C8;
+  --nt-border-strong: #CEC6B5;
 
   /* Messages */
-  --nt-message-sent: #242521;
-  --nt-message-received: #f8f6f1;
+  --nt-message-sent: var(--nt-primary);
+  --nt-message-received: var(--nt-surface);
 
   /* Composer */
-  --nt-composer: #f8f6f1;
-  --nt-composer-action: #777967;
+  --nt-composer: var(--nt-surface);
+  --nt-composer-action: var(--nt-primary);
 
   /* Effects */
-  --nt-shadow: 0 2px 12px rgba(36, 37, 33, 0.04);
+  --nt-shadow: 0 2px 12px rgba(48, 51, 41, 0.05);
 
   font-family:
     "Geist Variable",
@@ -57,19 +64,31 @@
   --color-surface-secondary: var(--nt-surface-secondary);
 
   --color-ink: var(--nt-ink);
+
+  /* Brand */
+  --color-primary: var(--nt-primary);
+  --color-primary-hover: var(--nt-primary-hover);
+  --color-secondary: var(--nt-secondary);
+  --color-accent: var(--nt-accent);
+
+  /* Legacy utility names */
   --color-olive: var(--nt-olive);
   --color-olive-hover: var(--nt-olive-hover);
 
+  /* Text */
   --color-text-main: var(--nt-text);
   --color-text-secondary: var(--nt-text-secondary);
   --color-text-muted: var(--nt-text-muted);
 
+  /* Borders */
   --color-app-border: var(--nt-border);
   --color-app-border-strong: var(--nt-border-strong);
 
+  /* Messages */
   --color-message-sent: var(--nt-message-sent);
   --color-message-received: var(--nt-message-received);
 
+  /* Composer */
   --color-composer: var(--nt-composer);
   --color-composer-action: var(--nt-composer-action);
 }

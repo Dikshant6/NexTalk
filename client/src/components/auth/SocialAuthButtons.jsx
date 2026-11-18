@@ -87,19 +87,21 @@ export default function SocialAuthButtons({ isRegister = false }) {
 
   return (
     <div className="w-full">
+      {/* Divider */}
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
-          <div className="w-full border-t border-[#DCD7CC]" />
+          <div className="w-full border-t border-app-border" />
         </div>
 
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-[#F5F2EA] px-3 font-medium tracking-wider text-[#777A62]">
+          <span className="bg-app px-3 font-medium tracking-wider text-primary-hover">
             or
           </span>
         </div>
       </div>
 
-      <div className="grid gap-3">
+      {/* Social buttons */}
+      <div className="flex justify-center gap-3">
         <button
           type="button"
           aria-label={
@@ -107,25 +109,29 @@ export default function SocialAuthButtons({ isRegister = false }) {
           }
           onClick={handleGoogleClick}
           disabled={loading}
-          className="inline-flex h-12 w-full align-center cursor-pointer items-center justify-center rounded-md border border-[#DCD7CC] bg-[#F5F2EA] text-[#22231F] transition-all duration-150 hover:border-[#BEB9AC] hover:bg-[#ECE8DD] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-10 w-10 cursor-pointer align-center items-center justify-center rounded-full text-ink transition-opacity duration-150 hover:opacity-75 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <GoogleLogo />
         </button>
 
-        {/* <button
+        {/*
+        <button
           type="button"
           onClick={handleAppleClick}
           disabled={loading}
           aria-label={isRegister ? "Sign up with Apple" : "Sign in with Apple"}
-          className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-md border border-[#DCD7CC] bg-[#F5F2EA] text-[#22231F] transition-all duration-150 hover:border-[#BEB9AC] hover:bg-[#ECE8DD]"
+          className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-md border border-app-border bg-surface text-ink transition-all duration-150 hover:border-primary hover:bg-surface-secondary"
         >
           <AppleLogo />
-        </button> 
+        </button>
         */}
       </div>
 
       {notice && (
-        <p role="alert" className="mt-3 text-center text-xs text-[#777A62]">
+        <p
+          role="alert"
+          className="mt-3 text-center text-xs text-text-secondary"
+        >
           {notice}
         </p>
       )}

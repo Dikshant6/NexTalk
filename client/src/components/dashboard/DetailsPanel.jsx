@@ -25,7 +25,7 @@ export default function DetailsPanel({ chat }) {
     <aside className="h-full overflow-y-auto rounded-2xl border border-app-border bg-surface">
       {/* Contact profile */}
       <div className="flex flex-col items-center px-5 py-10">
-        <div className="grid size-20 place-items-center rounded-full bg-app-border text-2xl font-semibold text-ink">
+        <div className="grid size-20 place-items-center rounded-full bg-surface-secondary text-2xl font-semibold text-ink">
           {chat.avatar}
         </div>
 
@@ -36,7 +36,7 @@ export default function DetailsPanel({ chat }) {
         <div className="mt-3 flex items-center gap-2 text-xs text-text-secondary">
           <span
             className={`size-2 rounded-full ${
-              chat.online ? "bg-olive" : "bg-[#B5B1A7]"
+              chat.online ? "bg-primary" : "bg-[#B5B1A7]"
             }`}
           />
           {chat.online ? "Online" : "Offline"}
@@ -48,7 +48,7 @@ export default function DetailsPanel({ chat }) {
               key={index}
               type="button"
               title={index === 0 ? "Voice call" : "Video call"}
-              className="grid size-10 place-items-center rounded-xl border border-app-border text-olive transition hover:bg-surface-secondary hover:text-ink"
+              className="grid size-10 place-items-center rounded-xl border border-app-border text-primary-hover transition hover:bg-surface-secondary hover:text-ink"
             >
               <Icon size={17} />
             </button>
@@ -65,7 +65,7 @@ export default function DetailsPanel({ chat }) {
 
           <button
             type="button"
-            className="text-xs text-olive transition hover:text-ink"
+            className="text-xs text-primary-hover transition hover:text-ink"
           >
             View all
           </button>
@@ -73,18 +73,13 @@ export default function DetailsPanel({ chat }) {
 
         <div className="mt-5 space-y-4">
           {sharedItems.map((item) => (
-            <div
-              key={item.name}
-              className="flex items-center justify-between"
-            >
+            <div key={item.name} className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="grid size-9 place-items-center rounded-lg bg-surface-secondary text-olive">
+                <div className="grid size-9 place-items-center rounded-lg bg-surface-secondary text-primary-hover">
                   <item.icon size={17} />
                 </div>
 
-                <span className="text-sm text-text-secondary">
-                  {item.name}
-                </span>
+                <span className="text-sm text-text-secondary">{item.name}</span>
               </div>
 
               <span className="text-xs text-text-muted">{item.count}</span>
@@ -99,7 +94,7 @@ export default function DetailsPanel({ chat }) {
 
       {/* Privacy */}
       <div className="mx-5 mt-3 flex gap-3 rounded-xl border border-app-border bg-app p-3">
-        <ShieldCheck className="shrink-0 text-olive" size={18} />
+        <ShieldCheck className="shrink-0 text-primary-hover" size={18} />
 
         <div>
           <p className="text-xs font-medium text-text-secondary">

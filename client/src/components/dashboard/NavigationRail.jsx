@@ -14,9 +14,9 @@ export default function NavigationRail() {
       {/* NexTalk Logo */}
       <div
         title="NexTalk"
-        className="grid size-10 shrink-0 place-items-center rounded-xl bg-olive text-app"
+        className="grid size-10 shrink-0 place-items-center rounded-xl"
       >
-        <span className="text-xl font-bold tracking-tight">N</span>
+        <span className="text-xl font-bold tracking-tight text-black">N</span>
       </div>
 
       {/* Navigation */}
@@ -28,7 +28,9 @@ export default function NavigationRail() {
             title={label}
             className={({ isActive }) =>
               `grid size-10 place-items-center rounded-xl transition-colors ${
-                isActive ? "text-olive" : "text-text-muted hover:text-ink"
+                isActive
+                  ? "text-primary-hover"
+                  : "text-text-muted hover:text-ink"
               }`
             }
           >
