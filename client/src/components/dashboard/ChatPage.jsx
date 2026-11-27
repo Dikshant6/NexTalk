@@ -7,13 +7,15 @@ import NavigationRail from "@/components/dashboard/NavigationRail";
 import Sidebar from "@/components/dashboard/Sidebar";
 import ChatWindow from "@/components/dashboard/ChatWindow";
 import DetailsPanel from "@/components/dashboard/DetailsPanel";
+import ProfileDialog from "@/components/dashboard/ProfileDialog";
 
 export default function ChatPage() {
   const [chats, setChats] = useState(mockChats);
   const [selectedChatId, setSelectedChatId] = useState("1");
   const [showDetails, setShowDetails] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  const { user, logout } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId);
@@ -114,7 +116,11 @@ export default function ChatPage() {
             : "grid-cols-[68px_260px_minmax(0,1fr)]"
         }`}
       >
-        <NavigationRail />
+        <NavigationRail
+          user={user}
+          onProfileClick={() => setProfileOpen(true)}
+          onLogout={handleLogout}
+        />
 
         <Sidebar
           chats={chats}
@@ -122,6 +128,7 @@ export default function ChatPage() {
           onSelectChat={handleSelectChat}
           onCreateConversation={handleCreateConversation}
           user={user}
+          onProfileUpdated={setUser}
           onLogout={handleLogout}
         />
 
@@ -133,6 +140,13 @@ export default function ChatPage() {
         />
 
         {showDetails && selectedChat && <DetailsPanel chat={selectedChat} />}
+
+        <ProfileDialog
+          open={profileOpen}
+          onOpenChange={setProfileOpen}
+          user={user}
+          onProfileUpdated={setUser}
+        />
       </div>
     </main>
   );

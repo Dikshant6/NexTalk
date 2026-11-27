@@ -5,12 +5,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Search, MessageSquarePlus, Settings, BellOff } from "lucide-react";
+import { Search, MessageSquarePlus, BellOff } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useNavigate } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ChatListSkeleton from "./ChatListSkeleton";
 import NewConversationDialog from "./NewConversationDialog";
+import ProfileDialog from "./ProfileDialog";
 
 export default function Sidebar({
   chats,
@@ -18,13 +18,13 @@ export default function Sidebar({
   onSelectChat,
   onCreateConversation,
   user,
+  onProfileUpdated,
   isLoading = false,
 }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [openNewChat, setOpenNewChat] = useState(false);
-
-  const navigate = useNavigate();
+  const [openProfile, setOpenProfile] = useState(false);
 
   const filteredChats = chats.filter((chat) => {
     const matchesSearch = chat.name
@@ -96,6 +96,13 @@ export default function Sidebar({
         open={openNewChat}
         onOpenChange={setOpenNewChat}
         onSelectUser={handleSelectUser}
+      />
+
+      <ProfileDialog
+        open={openProfile}
+        onOpenChange={setOpenProfile}
+        user={user}
+        onProfileUpdated={onProfileUpdated}
       />
 
       {/* Search */}
@@ -219,46 +226,6 @@ export default function Sidebar({
 
         <ScrollBar orientation="vertical" />
       </ScrollArea>
-
-      {/* Profile */}
-      <div className="flex h-[76px] shrink-0 items-center justify-between border-t border-app-border px-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <Avatar className="size-11 shrink-0 rounded-full">
-            <AvatarFallback className="bg-surface-secondary text-sm font-semibold text-ink">
-              {user?.displayName?.[0]?.toUpperCase() || "N"}
-            </AvatarFallback>
-          </Avatar>
-
-          <div className="min-w-0">
-            <h2 className="truncate text-sm font-semibold text-ink">
-              {user?.displayName || user?.username || "NexTalk User"}
-            </h2>
-
-            <p className="truncate text-xs text-text-secondary">
-              {user?.email || "Your account"}
-            </p>
-          </div>
-        </div>
-
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                onClick={() => navigate("/settings")}
-                aria-label="Settings"
-                className="rounded-lg p-2 text-text-secondary transition hover:bg-surface-secondary hover:text-ink"
-              />
-            }
-          >
-            <Settings size={17} />
-          </TooltipTrigger>
-
-          <TooltipContent>
-            <p>Settings</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
     </aside>
   );
 }
